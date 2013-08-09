@@ -30,7 +30,10 @@ module Text.Markov(
 	gAnalyzeOrder,
 	analyzeFromUrls,
 	generateString,
-	chainString	
+	chainString,
+	generateMarkovArrow,
+	runMarkovArrow,
+	liftMarkovModel	
 ) where 
 
 import qualified Data.HashMap.Strict as S 
@@ -77,6 +80,16 @@ newtype MarkovModel order out = MM {
 newtype MarkovArrow order out = MA {
 		unMA :: order -> [(out, Freq)]
 	}
+
+-- | Run a markov arrow as a mapping from order to [(out, freq)]
+runMarkovArrow :: MarkovArrow order out -> order -> [(out, Freq)]
+runMarkovArrow m o = unMA m o
+
+-- | Generate a string of out from a markov arrow 
+generateMarkovArrow :: (Order order out, RandomGen g) => MarkovArrow order out ->  g -> order -> [out]
+generateMarkovArrow m seed o = let xs = unMA m o
+				   (p,g) = freq xs seed	
+			       in generateMarkovArrow m seed (shiftOrder p o)
 
 -- | And I can lift an MarkovModel into the MarkovArrow category 
 liftMarkovModel :: Order order out => MarkovModel order out -> MarkovArrow order out 
