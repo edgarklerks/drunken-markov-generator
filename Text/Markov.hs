@@ -288,7 +288,7 @@ testGAnalyze o  = do
 		let mos = gAnalyzeOrder o (words $ collapseSpaces $ concat body)
 		n <- newStdGen 
 		let bs =  generateString n mos 
-		writeFile "generated-words" $ unwords bs 
+		writeFile "generated-words" $ unwords (take 400 bs) 
 
 collapseSpaces :: String -> String 
 collapseSpaces (' ': ' ': xs) = collapseSpaces (' ':xs)
